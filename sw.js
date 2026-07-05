@@ -1,5 +1,5 @@
 /* Kniffel Block – Service Worker für Offline-Betrieb */
-const CACHE = 'kniffel-v1';
+const CACHE = 'kniffel-v2';
 const ASSETS = [
   './',
   './index.html',
