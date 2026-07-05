@@ -166,25 +166,25 @@ function gameComplete() {
   return state.players.every(p => keys.every(k => isSet(p.scores[k])));
 }
 
-// Aktuelles Spiel in die Bestenliste eintragen
+// Bestenliste aktualisieren: je Person nur der beste Wert bleibt erhalten.
+// Gibt zurück, ob es einen neuen persönlichen Rekord gab.
 function recordGame() {
-  const totals = state.players.map(p => ({ name: p.name, total: grandTotal(p) }));
-  const max = Math.max(...totals.map(t => t.total));
-  totals.forEach(t => {
-    const key = normName(t.name);
-    const e = state.leaderboard[key] || { name: t.name, best: 0, games: 0, wins: 0 };
-    e.name = t.name;                       // aktuellen Anzeigenamen übernehmen
-    e.best = Math.max(e.best, t.total);
-    e.games += 1;
-    if (t.total === max) e.wins += 1;      // bei Gleichstand gewinnen alle Spitzenreiter
+  let improved = false;
+  state.players.forEach(p => {
+    const total = grandTotal(p);
+    const key = normName(p.name);
+    const e = state.leaderboard[key] || { name: p.name, best: 0 };
+    e.name = p.name;                       // aktuellen Anzeigenamen übernehmen
+    if (total > e.best) { e.best = total; improved = true; }
     state.leaderboard[key] = e;
   });
   save();
+  return improved;
 }
 
 // Bestenliste sortiert nach höchster Punktzahl
 function bestRanking() {
-  return Object.values(state.leaderboard).sort((a, b) => b.best - a.best || b.wins - a.wins);
+  return Object.values(state.leaderboard).sort((a, b) => b.best - a.best);
 }
 
 const rankingBackdrop = document.getElementById('ranking-backdrop');
@@ -209,11 +209,10 @@ function renderRanking() {
   const bestHtml = best.length
     ? best.map((e, i) => `<div class="rank-row">
         <span class="rank-pos">${medal(i + 1)}</span>
-        <span class="rank-name">${escapeHtml(e.name)}
-          <small>${e.games} Spiel${e.games === 1 ? '' : 'e'} · ${e.wins} Sieg${e.wins === 1 ? '' : 'e'}</small></span>
+        <span class="rank-name">${escapeHtml(e.name)}</span>
         <span class="rank-score">${e.best}</span>
       </div>`).join('')
-    : `<p class="rank-empty">Noch keine Spiele gewertet. Beende unten ein Spiel, um die Bestenliste zu starten.</p>`;
+    : `<p class="rank-empty">Noch keine Werte gespeichert. Beende unten ein Spiel, um die Bestenliste zu starten.</p>`;
 
   document.getElementById('ranking-body').innerHTML = `
     <div class="rank-section">
@@ -229,11 +228,12 @@ function renderRanking() {
 
   const rec = document.getElementById('rank-record');
   if (rec) rec.addEventListener('click', () => {
-    if (confirm('Aktuelles Spiel werten und für ein neues Spiel zurücksetzen?')) {
-      recordGame();
+    if (confirm('Spiel werten? Nur neue persönliche Bestwerte werden gespeichert, danach beginnt ein neues Spiel.')) {
+      const improved = recordGame();
       state.players.forEach(p => p.scores = {});
       render();
       renderRanking();
+      if (improved) alert('🏆 Neuer Bestwert gespeichert!');
     }
   });
   const clr = document.getElementById('rank-clear');
