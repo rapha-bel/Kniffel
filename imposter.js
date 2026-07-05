@@ -100,6 +100,8 @@ function render() {
   if (phase === 'reveal-cover') return renderCover();
   if (phase === 'reveal-card') return renderCard();
   if (phase === 'discuss') return renderDiscuss();
+  if (phase === 'vote-cover') return renderVoteCover();
+  if (phase === 'vote-card') return renderVoteCard();
   if (phase === 'result') return renderResult();
 }
 
@@ -231,16 +233,85 @@ function renderDiscuss() {
         Wer klingt verdächtig? Diskutiert und stimmt ab, wer der Impostor ist.
       </p>
       <div class="imp-starter"><span>Beginnt:</span> <strong>${escapeHtml(starter)}</strong></div>
-      <button id="resolve-btn" class="btn btn-primary btn-wide">Auflösung anzeigen</button>
-      <button id="back-setup" class="btn btn-ghost btn-wide">Abbrechen</button>
+      <button id="vote-btn" class="btn btn-primary btn-wide">Abstimmung starten</button>
+      <button id="resolve-btn" class="btn btn-ghost btn-wide">Ohne Abstimmung auflösen</button>
     </div>`;
-  document.getElementById('resolve-btn').addEventListener('click', () => { phase = 'result'; render(); });
-  document.getElementById('back-setup').addEventListener('click', () => { phase = 'setup'; render(); });
+  document.getElementById('vote-btn').addEventListener('click', () => {
+    round.votes = []; round.votePos = 0; phase = 'vote-cover'; render();
+  });
+  document.getElementById('resolve-btn').addEventListener('click', () => { round.votes = null; phase = 'result'; render(); });
+}
+
+/* --- Abstimmung: Übergabe --- */
+function renderVoteCover() {
+  const name = state.players[round.votePos];
+  screen.innerHTML = `
+    <div class="imp-cover">
+      <div class="imp-cover__eye">${ballotIcon()}</div>
+      <p class="imp-cover__pass">Abstimmung – gib das Handy an</p>
+      <h2 class="imp-cover__name">${escapeHtml(name)}</h2>
+      <button id="vote-open" class="btn btn-primary btn-wide">Abstimmen</button>
+      <p class="imp-note">${round.votePos + 1} von ${state.players.length}</p>
+    </div>`;
+  document.getElementById('vote-open').addEventListener('click', () => { phase = 'vote-card'; render(); });
+}
+
+/* --- Abstimmung: Auswahl --- */
+function renderVoteCard() {
+  const voter = round.votePos;
+  screen.innerHTML = `
+    <div class="imp-reveal">
+      <p class="imp-reveal__name">${escapeHtml(state.players[voter])}</p>
+      <h2 class="imp-h imp-center">Wer ist der Impostor?</h2>
+      <div class="imp-vote-list">
+        ${state.players.map((name, i) => i === voter ? '' :
+          `<button class="vote-option" data-vote="${i}">${escapeHtml(name)}</button>`).join('')}
+      </div>
+    </div>`;
+  screen.querySelectorAll('.vote-option').forEach(btn => {
+    btn.addEventListener('click', () => {
+      round.votes.push(Number(btn.dataset.vote));
+      if (voter === state.players.length - 1) { phase = 'result'; }
+      else { round.votePos++; phase = 'vote-cover'; }
+      render();
+    });
+  });
 }
 
 /* --- Auflösung --- */
 function renderResult() {
   const imps = state.players.filter((_, i) => round.impostors.has(i));
+
+  // Abstimmungs-Auswertung (falls abgestimmt wurde)
+  let voteHtml = '';
+  if (round.votes && round.votes.length) {
+    const counts = state.players.map((_, i) => round.votes.filter(v => v === i).length);
+    const maxVotes = Math.max(...counts);
+    const accused = state.players.map((_, i) => i).filter(i => counts[i] === maxVotes && maxVotes > 0);
+    const caught = accused.some(i => round.impostors.has(i));
+    const tie = accused.length > 1;
+
+    const rows = state.players
+      .map((name, i) => ({ name, i, c: counts[i] }))
+      .sort((a, b) => b.c - a.c)
+      .map(r => `<div class="tally-row ${r.c === maxVotes && maxVotes > 0 ? 'top' : ''}">
+        <span class="tally-name">${escapeHtml(r.name)}${round.impostors.has(r.i) ? ' ' + eyeIcon() : ''}</span>
+        <span class="tally-bar"><span style="width:${maxVotes ? (r.c / maxVotes * 100) : 0}%"></span></span>
+        <span class="tally-count">${r.c}</span>
+      </div>`).join('');
+
+    const verdict = tie
+      ? `<span class="verdict tie">Unentschieden – keine klare Mehrheit</span>`
+      : caught
+        ? `<span class="verdict win">Erwischt! Die Gruppe hat den Impostor gefunden 🎉</span>`
+        : `<span class="verdict lose">Entkommen! Die Gruppe lag daneben</span>`;
+
+    voteHtml = `
+      <h2 class="imp-h">Abstimmung</h2>
+      <div class="imp-tally">${rows}</div>
+      <div class="verdict-box">${verdict}</div>`;
+  }
+
   screen.innerHTML = `
     <div class="imp-result">
       <div class="imp-card">
@@ -252,16 +323,25 @@ function renderResult() {
         <span class="imp-result__label">${imps.length > 1 ? 'Impostor waren' : 'Impostor war'}</span>
         <strong>${imps.map(escapeHtml).join(' & ')}</strong>
       </div>
+      ${voteHtml}
       <button id="again-btn" class="btn btn-primary btn-wide">Neue Runde (gleiche Spieler)</button>
       <button id="setup-btn" class="btn btn-ghost btn-wide">Zurück zum Setup</button>
     </div>`;
   document.getElementById('again-btn').addEventListener('click', startRound);
   document.getElementById('setup-btn').addEventListener('click', () => { phase = 'setup'; render(); });
+
+  if (round.votes && round.votes.length) {
+    const counts = state.players.map((_, i) => round.votes.filter(v => v === i).length);
+    const maxVotes = Math.max(...counts);
+    const accused = state.players.map((_, i) => i).filter(i => counts[i] === maxVotes && maxVotes > 0);
+    if (accused.length === 1 && round.impostors.has(accused[0]) && window.celebrate) window.celebrate();
+  }
 }
 
 /* ---------- Icons ---------- */
 function eyeIcon() { return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>`; }
 function trashIcon() { return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>`; }
+function ballotIcon() { return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 12h6"/><path d="M9 16h6"/><path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/><path d="m9 8 1.5 1.5L14 6"/></svg>`; }
 
 /* ---------- Service Worker ---------- */
 if ('serviceWorker' in navigator) {

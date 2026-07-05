@@ -253,6 +253,31 @@ tr.total .val.reached { color: #ffe9a8 !important; }
 .imp-result__imp strong { font-size: 24px; color: var(--danger); }
 .imp-reveal .btn, .imp-cover .btn, .imp-discuss .btn, .imp-result .btn { margin-top: 4px; }
 .imp-discuss .btn + .btn, .imp-result .btn + .btn { margin-top: 8px; }
+
+/* Abstimmung: Auswahl */
+.imp-vote-list { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+.vote-option {
+  border: 1.5px solid var(--line); background: var(--card);
+  border-radius: 14px; padding: 16px; font-size: 17px; font-weight: 700;
+  color: var(--text); cursor: pointer; transition: transform .1s, background .12s, border-color .12s;
+}
+.vote-option:active { background: var(--terra-soft); border-color: var(--terra); transform: scale(.98); }
+
+/* Auflösung: Stimmen-Balken */
+.imp-tally { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+.tally-row { display: flex; align-items: center; gap: 10px; }
+.tally-name { flex: 0 0 34%; font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 4px; }
+.tally-name svg { width: 14px; height: 14px; color: var(--terra-dark); }
+.tally-row.top .tally-name { color: var(--terra-dark); }
+.tally-bar { flex: 1; height: 12px; background: var(--cream-2); border-radius: 6px; overflow: hidden; }
+.tally-bar > span { display: block; height: 100%; background: var(--line); border-radius: 6px; transition: width .3s; }
+.tally-row.top .tally-bar > span { background: linear-gradient(90deg, var(--terra), var(--terra-dark)); }
+.tally-count { flex: none; min-width: 18px; text-align: right; font-weight: 800; font-size: 15px; }
+.verdict-box { margin-bottom: 18px; }
+.verdict { display: block; text-align: center; font-weight: 700; font-size: 15px; padding: 12px; border-radius: 14px; }
+.verdict.win { background: #e6f2e6; color: #2f7a3a; }
+.verdict.lose { background: #f7e5e0; color: var(--danger); }
+.verdict.tie { background: var(--cream-2); color: var(--muted); }
 .app-bar__actions { display: flex; gap: 8px; }
 .icon-btn {
   border: 0;
