@@ -23,14 +23,28 @@ self.addEventListener('activate', e => {
   );
 });
 
-// Cache-first: läuft komplett offline
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
-  e.respondWith(
-    caches.match(e.request).then(cached => cached || fetch(e.request).then(res => {
-      const copy = res.clone();
-      caches.open(CACHE).then(c => c.put(e.request, copy)).catch(()=>{});
-      return res;
-    }).catch(() => cached))
-  );
+  const url = new URL(e.request.url);
+  // Kern-Dateien (Seite, Skript, Stil): network-first -> online immer aktuell,
+  // offline aus dem Cache. Icons/Bilder: cache-first (schnell, ändern sich selten).
+  const isCore = e.request.mode === 'navigate' || /\.(?:html|css|js|json)$/.test(url.pathname);
+
+  if (isCore) {
+    e.respondWith(
+      fetch(e.request).then(res => {
+        const copy = res.clone();
+        caches.open(CACHE).then(c => c.put(e.request, copy)).catch(() => {});
+        return res;
+      }).catch(() => caches.match(e.request).then(m => m || caches.match('./index.html')))
+    );
+  } else {
+    e.respondWith(
+      caches.match(e.request).then(cached => cached || fetch(e.request).then(res => {
+        const copy = res.clone();
+        caches.open(CACHE).then(c => c.put(e.request, copy)).catch(() => {});
+        return res;
+      }))
+    );
+  }
 });
