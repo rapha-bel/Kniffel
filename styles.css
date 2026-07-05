@@ -55,8 +55,69 @@ html, body {
   align-items: center;
   gap: 8px;
 }
+.app-bar h1 { flex: 1; }
 .title-icon { width: 24px; height: 24px; flex: none; }
 .icon-btn svg { width: 22px; height: 22px; display: block; margin: auto; }
+.back-btn { display: flex; align-items: center; justify-content: center; text-decoration: none; flex: none; }
+
+/* --- Startseite --- */
+.home-hero {
+  text-align: center;
+  padding: calc(env(safe-area-inset-top) + 32px) 20px 24px;
+  color: #fff;
+  background: linear-gradient(135deg, var(--terra) 0%, var(--terra-dark) 100%);
+  box-shadow: 0 4px 16px rgba(169, 80, 42, .28);
+}
+.home-hero__badge {
+  width: 68px; height: 68px; margin: 0 auto 12px;
+  background: rgba(255,255,255,.16); border-radius: 20px;
+  display: flex; align-items: center; justify-content: center;
+}
+.home-hero__badge svg { width: 40px; height: 40px; }
+.home-hero h1 { margin: 0; font-size: 26px; font-weight: 800; letter-spacing: .01em; text-shadow: 0 1px 2px rgba(0,0,0,.15); }
+.home-hero p { margin: 4px 0 0; opacity: .9; font-size: 14px; }
+
+.home { padding: 18px 16px; display: flex; flex-direction: column; gap: 12px; max-width: 560px; margin: 0 auto; }
+.game-card {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--card); border-radius: var(--radius);
+  padding: 16px 16px; box-shadow: var(--shadow);
+  text-decoration: none; color: var(--text);
+  border: 1px solid var(--line);
+  transition: transform .12s, box-shadow .12s;
+}
+.game-card:active { transform: scale(.98); box-shadow: var(--shadow-sm); }
+.game-card__icon {
+  width: 52px; height: 52px; flex: none;
+  background: var(--terra-soft); color: var(--terra-dark);
+  border-radius: 14px; display: flex; align-items: center; justify-content: center;
+}
+.game-card__icon svg { width: 30px; height: 30px; }
+.game-card__text { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.game-card__name { font-size: 18px; font-weight: 800; }
+.game-card__desc { font-size: 13px; color: var(--muted); }
+.game-card__arrow { width: 22px; height: 22px; color: var(--muted); flex: none; }
+.game-card--soon { opacity: .6; box-shadow: none; border-style: dashed; }
+.game-card--soon .game-card__icon { background: var(--cream-2); color: var(--muted); }
+
+/* --- Tutto --- */
+.cat-round { min-width: 66px !important; text-align: center !important; }
+.cat-round .cat-name { display: block; text-align: center; }
+.tutto-banner {
+  margin: 14px 14px 0; padding: 12px 16px;
+  background: linear-gradient(135deg, #f6d365 0%, #d4a017 100%);
+  color: #5a3a00; border-radius: 14px;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 15px; font-weight: 700; box-shadow: var(--shadow-sm);
+}
+.tutto-banner[hidden] { display: none; }
+.tutto-banner .ico-crown { position: static; width: 22px; height: 22px; color: #7a5000; filter: none; }
+.val.reached { color: var(--gold) !important; }
+tr.total .val.reached { color: #ffe9a8 !important; }
+
+.sheet-actions { padding: 4px 16px 8px; max-width: 560px; margin: 0 auto; }
+.btn-wide { width: 100%; }
+.entry-sign { flex: none; border: 1.5px solid var(--line); font-size: 18px; padding: 13px 15px; }
 .app-bar__actions { display: flex; gap: 8px; }
 .icon-btn {
   border: 0;

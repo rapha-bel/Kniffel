@@ -3,8 +3,11 @@ const CACHE = 'kniffel-v2';
 const ASSETS = [
   './',
   './index.html',
+  './kniffel.html',
+  './kniffel.js',
+  './tutto.html',
+  './tutto.js',
   './styles.css',
-  './app.js',
   './manifest.json',
   './icons/icon.svg',
   './icons/icon-180.png',

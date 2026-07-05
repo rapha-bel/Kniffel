@@ -1,7 +1,7 @@
 {
-  "name": "Kniffel Block",
-  "short_name": "Kniffel",
-  "description": "Digitaler Kniffel-Punkteblock – trage Punkte ein, Summen und Bonus werden automatisch berechnet.",
+  "name": "Spielblock",
+  "short_name": "Spielblock",
+  "description": "Digitale Punkteblöcke für Würfelspiele – Kniffel und Tutto. Punkte eintragen, Summen automatisch berechnen.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
