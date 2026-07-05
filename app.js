@@ -62,7 +62,7 @@ function render() {
 
   const head = `<tr>
     <th class="cat">Kategorie</th>
-    ${players.map((p,i)=>`<th class="${i===leader?'winner':''}">${escapeHtml(p.name)}</th>`).join('')}
+    ${players.map((p,i)=>`<th class="${i===leader?'winner':''}">${escapeHtml(p.name)}${i===leader?ICONS.crown:''}</th>`).join('')}
   </tr>`;
 
   const rows = [];
@@ -140,9 +140,19 @@ function leaderIndex() {
   return any ? best : -1;
 }
 
+/* ---------- Icons (SVG) ---------- */
+const ICONS = {
+  crown: `<svg class="ico-crown" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7z"/><rect x="4.5" y="18" width="15" height="2.4" rx="1"/></svg>`,
+  trash: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>`,
+};
+
 /* ---------- Rangliste ---------- */
 function normName(n) { return String(n).trim().toLowerCase(); }
-function medal(rank) { return rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank + '.'; }
+// Rang als Medaillen-Badge (Gold/Silber/Bronze) bzw. schlichte Nummer
+function medal(rank) {
+  const cls = rank <= 3 ? `medal medal-${rank}` : 'medal medal-n';
+  return `<span class="${cls}">${rank}</span>`;
+}
 
 // Platzierung im aktuellen Spiel (mit gleichem Rang bei Gleichstand)
 function currentRanking() {
@@ -233,7 +243,7 @@ function renderRanking() {
       state.players.forEach(p => p.scores = {});
       render();
       renderRanking();
-      if (improved) alert('🏆 Neuer Bestwert gespeichert!');
+      if (improved) alert('Neuer Bestwert gespeichert!');
     }
   });
   const clr = document.getElementById('rank-clear');
@@ -324,7 +334,7 @@ function renderPlayersList() {
   playersList.innerHTML = state.players.map((p,i) => `
     <li>
       <input type="text" maxlength="12" value="${escapeHtml(p.name)}" data-idx="${i}" />
-      ${state.players.length > 1 ? `<button class="del" data-idx="${i}">🗑</button>` : ''}
+      ${state.players.length > 1 ? `<button class="del" data-idx="${i}" aria-label="Löschen">${ICONS.trash}</button>` : ''}
     </li>`).join('');
   playersList.querySelectorAll('input').forEach(inp => {
     inp.addEventListener('input', () => {
