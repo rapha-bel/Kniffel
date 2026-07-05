@@ -9,6 +9,8 @@ const ASSETS = [
   './tutto.js',
   './counter.html',
   './counter.js',
+  './imposter.html',
+  './imposter.js',
   './confetti.js',
   './styles.css',
   './manifest.json',

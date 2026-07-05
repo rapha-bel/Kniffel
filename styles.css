@@ -173,6 +173,86 @@ tr.total .val.reached { color: #ffe9a8 !important; }
 .counter-btn:active { transform: scale(.92); }
 .counter-btn.plus { background: linear-gradient(135deg, var(--terra) 0%, var(--terra-dark) 100%); color: #fff; }
 .counter-btn.minus { background: var(--terra-soft); color: var(--terra-dark); }
+
+/* --- Impostor --- */
+.imp-screen { padding: 16px; max-width: 520px; margin: 0 auto; }
+.imp-h { font-size: 13px; font-weight: 800; color: var(--terra-dark); text-transform: uppercase; letter-spacing: .06em; margin: 18px 0 10px; }
+.imp-h:first-child { margin-top: 4px; }
+.imp-center { text-align: center; }
+.imp-note { text-align: center; color: var(--muted); font-size: 13px; margin: 10px 0 0; }
+
+.imp-setup .players-list { margin: 0 0 12px; }
+.imp-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+  padding: 12px 14px; margin-bottom: 10px; font-weight: 600; font-size: 15px;
+}
+.imp-row--col { flex-direction: column; align-items: stretch; gap: 8px; }
+.imp-stepper { display: flex; align-items: center; gap: 12px; }
+.stepper-btn {
+  width: 38px; height: 38px; border-radius: 10px; border: 0; cursor: pointer;
+  background: var(--terra-soft); color: var(--terra-dark); font-size: 20px; font-weight: 700;
+}
+.stepper-btn:active { transform: scale(.92); }
+.stepper-val { min-width: 22px; text-align: center; font-size: 18px; font-weight: 800; }
+.imp-select {
+  border: 1.5px solid var(--line); border-radius: 12px; padding: 12px; font-size: 15px;
+  background: var(--cream); color: var(--text); font-weight: 600;
+}
+.toggle {
+  width: 52px; height: 30px; border-radius: 999px; border: 0; cursor: pointer;
+  background: var(--line); position: relative; transition: background .18s; flex: none;
+}
+.toggle.on { background: var(--terra); }
+.toggle__knob {
+  position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%;
+  background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.25); transition: transform .18s;
+}
+.toggle.on .toggle__knob { transform: translateX(22px); }
+.imp-start { margin-top: 18px; }
+.imp-start:disabled { opacity: .5; }
+
+/* Reveal / Cover */
+.imp-cover, .imp-discuss, .imp-result { text-align: center; padding: 24px 4px; }
+.imp-cover__eye, .imp-discuss .imp-cover__eye {
+  width: 76px; height: 76px; margin: 8px auto 16px; border-radius: 22px;
+  background: var(--terra-soft); color: var(--terra-dark);
+  display: flex; align-items: center; justify-content: center;
+}
+.imp-cover__eye svg { width: 42px; height: 42px; }
+.imp-cover__pass { color: var(--muted); margin: 0; font-size: 15px; }
+.imp-cover__name { font-size: 30px; font-weight: 800; margin: 4px 0 24px; }
+
+.imp-reveal { text-align: center; padding: 16px 4px; }
+.imp-reveal__name { color: var(--muted); font-weight: 700; font-size: 15px; margin: 6px 0 12px; }
+.imp-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 20px;
+  padding: 30px 20px; box-shadow: var(--shadow); margin-bottom: 22px;
+}
+.imp-card__label { color: var(--muted); font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+.imp-card__word { font-size: 38px; font-weight: 800; color: var(--terra-dark); line-height: 1.1; }
+.imp-card__cat { margin-top: 12px; display: inline-block; font-size: 13px; font-weight: 700;
+  color: var(--terra-dark); background: var(--terra-soft); padding: 4px 12px; border-radius: 999px; }
+.imp-card--imp { background: linear-gradient(135deg, #3a2e26 0%, #26201b 100%); border: 0; }
+.imp-card--imp .imp-card__role {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  font-size: 26px; font-weight: 800; color: #f6d365;
+}
+.imp-card--imp .imp-card__role svg { width: 30px; height: 30px; }
+.imp-card--imp .imp-card__hint { margin-top: 14px; color: #e8ded2; font-size: 16px; line-height: 1.5; }
+.imp-card--imp .imp-card__hint strong { color: #fff; }
+
+.imp-discuss__text { color: var(--text); font-size: 16px; line-height: 1.6; margin: 8px 16px 20px; }
+.imp-starter {
+  background: var(--terra-soft); color: var(--terra-dark); border-radius: 14px;
+  padding: 12px; margin-bottom: 20px; font-size: 16px;
+}
+.imp-starter strong { font-size: 18px; }
+.imp-result__imp { margin: 4px 0 22px; font-size: 16px; }
+.imp-result__label { display: block; color: var(--muted); font-size: 14px; margin-bottom: 4px; }
+.imp-result__imp strong { font-size: 24px; color: var(--danger); }
+.imp-reveal .btn, .imp-cover .btn, .imp-discuss .btn, .imp-result .btn { margin-top: 4px; }
+.imp-discuss .btn + .btn, .imp-result .btn + .btn { margin-top: 8px; }
 .app-bar__actions { display: flex; gap: 8px; }
 .icon-btn {
   border: 0;
