@@ -31,7 +31,9 @@ let state = load() || {
     { id: uid(), name: 'Spieler 1', scores: {} },
     { id: uid(), name: 'Spieler 2', scores: {} },
   ],
+  leaderboard: {},
 };
+if (!state.leaderboard) state.leaderboard = {};
 
 function uid() { return Math.random().toString(36).slice(2, 9); }
 function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
@@ -137,6 +139,116 @@ function leaderIndex() {
   });
   return any ? best : -1;
 }
+
+/* ---------- Rangliste ---------- */
+function normName(n) { return String(n).trim().toLowerCase(); }
+function medal(rank) { return rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank + '.'; }
+
+// Platzierung im aktuellen Spiel (mit gleichem Rang bei Gleichstand)
+function currentRanking() {
+  const arr = state.players.map(p => ({
+    name: p.name,
+    total: grandTotal(p),
+    any: Object.keys(p.scores).length > 0,
+  }));
+  arr.sort((a, b) => b.total - a.total);
+  let rank = 0, prev = null;
+  arr.forEach((e, i) => {
+    if (prev === null || e.total < prev) { rank = i + 1; prev = e.total; }
+    e.rank = rank;
+  });
+  return arr;
+}
+
+// Alle Kategorien bei allen Spielern gesetzt?
+function gameComplete() {
+  const keys = CATEGORIES.map(c => c.key);
+  return state.players.every(p => keys.every(k => isSet(p.scores[k])));
+}
+
+// Aktuelles Spiel in die Bestenliste eintragen
+function recordGame() {
+  const totals = state.players.map(p => ({ name: p.name, total: grandTotal(p) }));
+  const max = Math.max(...totals.map(t => t.total));
+  totals.forEach(t => {
+    const key = normName(t.name);
+    const e = state.leaderboard[key] || { name: t.name, best: 0, games: 0, wins: 0 };
+    e.name = t.name;                       // aktuellen Anzeigenamen übernehmen
+    e.best = Math.max(e.best, t.total);
+    e.games += 1;
+    if (t.total === max) e.wins += 1;      // bei Gleichstand gewinnen alle Spitzenreiter
+    state.leaderboard[key] = e;
+  });
+  save();
+}
+
+// Bestenliste sortiert nach höchster Punktzahl
+function bestRanking() {
+  return Object.values(state.leaderboard).sort((a, b) => b.best - a.best || b.wins - a.wins);
+}
+
+const rankingBackdrop = document.getElementById('ranking-backdrop');
+
+function openRanking() { renderRanking(); rankingBackdrop.hidden = false; }
+function closeRanking() { rankingBackdrop.hidden = true; }
+
+function renderRanking() {
+  const cur = currentRanking();
+  const anyScores = cur.some(e => e.any);
+  const complete = gameComplete() && anyScores;
+
+  const curHtml = anyScores
+    ? cur.map(e => `<div class="rank-row">
+        <span class="rank-pos">${medal(e.rank)}</span>
+        <span class="rank-name">${escapeHtml(e.name)}</span>
+        <span class="rank-score">${e.total}</span>
+      </div>`).join('')
+    : `<p class="rank-empty">Noch keine Punkte eingetragen.</p>`;
+
+  const best = bestRanking();
+  const bestHtml = best.length
+    ? best.map((e, i) => `<div class="rank-row">
+        <span class="rank-pos">${medal(i + 1)}</span>
+        <span class="rank-name">${escapeHtml(e.name)}
+          <small>${e.games} Spiel${e.games === 1 ? '' : 'e'} · ${e.wins} Sieg${e.wins === 1 ? '' : 'e'}</small></span>
+        <span class="rank-score">${e.best}</span>
+      </div>`).join('')
+    : `<p class="rank-empty">Noch keine Spiele gewertet. Beende unten ein Spiel, um die Bestenliste zu starten.</p>`;
+
+  document.getElementById('ranking-body').innerHTML = `
+    <div class="rank-section">
+      <h3 class="rank-h">Aktuelles Spiel ${complete ? '<span class="rank-badge">komplett</span>' : ''}</h3>
+      <div class="rank-list">${curHtml}</div>
+      ${anyScores ? `<button id="rank-record" class="btn btn-primary rank-record">Spiel beenden &amp; werten</button>` : ''}
+    </div>
+    <div class="rank-section">
+      <h3 class="rank-h">Bestenliste <small>höchste Punktzahl</small></h3>
+      <div class="rank-list">${bestHtml}</div>
+      ${best.length ? `<button id="rank-clear" class="btn btn-ghost rank-clear">Bestenliste zurücksetzen</button>` : ''}
+    </div>`;
+
+  const rec = document.getElementById('rank-record');
+  if (rec) rec.addEventListener('click', () => {
+    if (confirm('Aktuelles Spiel werten und für ein neues Spiel zurücksetzen?')) {
+      recordGame();
+      state.players.forEach(p => p.scores = {});
+      render();
+      renderRanking();
+    }
+  });
+  const clr = document.getElementById('rank-clear');
+  if (clr) clr.addEventListener('click', () => {
+    if (confirm('Gesamte Bestenliste unwiderruflich löschen?')) {
+      state.leaderboard = {};
+      save();
+      renderRanking();
+    }
+  });
+}
+
+document.getElementById('btn-ranking').addEventListener('click', openRanking);
+document.getElementById('ranking-done').addEventListener('click', closeRanking);
+rankingBackdrop.addEventListener('click', e => { if (e.target === rankingBackdrop) closeRanking(); });
 
 /* ---------- Eingabe-Dialog ---------- */
 const entryBackdrop = document.getElementById('entry-backdrop');

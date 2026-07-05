@@ -260,6 +260,37 @@ th.winner::after {
 .btn-primary:active { filter: brightness(.95); }
 .btn-ghost { background: transparent; color: var(--muted); }
 
+/* ranking */
+.rank-section { margin: 14px 0 4px; }
+.rank-h {
+  font-size: 13px; font-weight: 800; color: var(--terra-dark);
+  text-transform: uppercase; letter-spacing: .06em;
+  margin: 0 0 8px; display: flex; align-items: center; gap: 8px;
+}
+.rank-h small { font-weight: 600; text-transform: none; letter-spacing: 0; color: var(--muted); font-size: 12px; }
+.rank-badge {
+  font-size: 10px; font-weight: 800; color: #fff; background: var(--gold);
+  padding: 2px 8px; border-radius: 999px; letter-spacing: .04em;
+}
+.rank-list {
+  background: var(--cream); border-radius: 14px; overflow: hidden;
+  border: 1px solid var(--line);
+}
+.rank-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 14px; border-bottom: 1px solid var(--line);
+}
+.rank-row:last-child { border-bottom: 0; }
+.rank-pos {
+  min-width: 30px; text-align: center; font-size: 18px; font-weight: 800; color: var(--muted);
+}
+.rank-name { flex: 1; font-weight: 700; font-size: 15px; }
+.rank-name small { display: block; font-weight: 500; font-size: 11px; color: var(--muted); margin-top: 1px; }
+.rank-score { font-weight: 800; font-size: 18px; color: var(--terra-dark); }
+.rank-empty { color: var(--muted); font-size: 14px; text-align: center; padding: 14px; margin: 0; line-height: 1.5; }
+.rank-record { width: 100%; margin-top: 10px; }
+.rank-clear { width: 100%; margin-top: 6px; font-size: 13px; }
+
 /* players list */
 .players-list { list-style: none; margin: 14px 0; padding: 0; }
 .players-list li {
