@@ -22,8 +22,10 @@ let state = load() || {
     { id: uid(), name: 'Spieler 2' },
   ],
   rounds: [ {} ],   // jede Runde: { playerId: punkte }
+  leaderboard: {},  // pro Person: bester Gesamtwert
 };
 if (!state.rounds || !state.rounds.length) state.rounds = [ {} ];
+if (!state.leaderboard) state.leaderboard = {};
 
 function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 function load() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch { return null; } }
@@ -98,6 +100,109 @@ function render() {
 
   save();
 }
+
+/* ---------- Rangliste ---------- */
+function normName(n) { return String(n).trim().toLowerCase(); }
+function medal(rank) {
+  const cls = rank <= 3 ? `medal medal-${rank}` : 'medal medal-n';
+  return `<span class="${cls}">${rank}</span>`;
+}
+
+// Platzierung im aktuellen Spiel (gleicher Rang bei Gleichstand)
+function currentRanking() {
+  const arr = state.players.map(p => ({
+    name: p.name,
+    total: total(p.id),
+    any: state.rounds.some(r => typeof r[p.id] === 'number'),
+  }));
+  arr.sort((a, b) => b.total - a.total);
+  let rank = 0, prev = null;
+  arr.forEach((e, i) => {
+    if (prev === null || e.total < prev) { rank = i + 1; prev = e.total; }
+    e.rank = rank;
+  });
+  return arr;
+}
+
+// Bestenliste aktualisieren: je Person nur der beste Gesamtwert bleibt erhalten.
+function recordGame() {
+  let improved = false;
+  state.players.forEach(p => {
+    const t = total(p.id);
+    const key = normName(p.name);
+    const e = state.leaderboard[key] || { name: p.name, best: 0 };
+    e.name = p.name;
+    if (t > e.best) { e.best = t; improved = true; }
+    state.leaderboard[key] = e;
+  });
+  save();
+  return improved;
+}
+
+function bestRanking() {
+  return Object.values(state.leaderboard).sort((a, b) => b.best - a.best);
+}
+
+const rankingBackdrop = document.getElementById('ranking-backdrop');
+function openRanking() { renderRanking(); rankingBackdrop.hidden = false; }
+function closeRanking() { rankingBackdrop.hidden = true; }
+
+function renderRanking() {
+  const cur = currentRanking();
+  const anyScores = cur.some(e => e.any);
+
+  const curHtml = anyScores
+    ? cur.map(e => `<div class="rank-row">
+        <span class="rank-pos">${medal(e.rank)}</span>
+        <span class="rank-name">${escapeHtml(e.name)}</span>
+        <span class="rank-score">${e.total}</span>
+      </div>`).join('')
+    : `<p class="rank-empty">Noch keine Punkte eingetragen.</p>`;
+
+  const best = bestRanking();
+  const bestHtml = best.length
+    ? best.map((e, i) => `<div class="rank-row">
+        <span class="rank-pos">${medal(i + 1)}</span>
+        <span class="rank-name">${escapeHtml(e.name)}</span>
+        <span class="rank-score">${e.best}</span>
+      </div>`).join('')
+    : `<p class="rank-empty">Noch keine Werte gespeichert. Beende unten ein Spiel, um die Bestenliste zu starten.</p>`;
+
+  document.getElementById('ranking-body').innerHTML = `
+    <div class="rank-section">
+      <h3 class="rank-h">Aktuelles Spiel</h3>
+      <div class="rank-list">${curHtml}</div>
+      ${anyScores ? `<button id="rank-record" class="btn btn-primary rank-record">Spiel beenden &amp; werten</button>` : ''}
+    </div>
+    <div class="rank-section">
+      <h3 class="rank-h">Bestenliste <small>höchste Punktzahl</small></h3>
+      <div class="rank-list">${bestHtml}</div>
+      ${best.length ? `<button id="rank-clear" class="btn btn-ghost rank-clear">Bestenliste zurücksetzen</button>` : ''}
+    </div>`;
+
+  const rec = document.getElementById('rank-record');
+  if (rec) rec.addEventListener('click', () => {
+    if (confirm('Spiel werten? Nur neue persönliche Bestwerte werden gespeichert, danach beginnt ein neues Spiel.')) {
+      const improved = recordGame();
+      state.rounds = [ {} ];
+      render();
+      renderRanking();
+      if (improved) alert('Neuer Bestwert gespeichert!');
+    }
+  });
+  const clr = document.getElementById('rank-clear');
+  if (clr) clr.addEventListener('click', () => {
+    if (confirm('Gesamte Bestenliste unwiderruflich löschen?')) {
+      state.leaderboard = {};
+      save();
+      renderRanking();
+    }
+  });
+}
+
+document.getElementById('btn-ranking').addEventListener('click', openRanking);
+document.getElementById('ranking-done').addEventListener('click', closeRanking);
+rankingBackdrop.addEventListener('click', e => { if (e.target === rankingBackdrop) closeRanking(); });
 
 /* ---------- Eingabe-Dialog ---------- */
 const entryBackdrop = document.getElementById('entry-backdrop');
