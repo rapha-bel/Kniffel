@@ -41,6 +41,18 @@ const WORDS = {
     { w: 'Friseur', h: 'Haare' }, { w: 'Bauer', h: 'Feld' }, { w: 'Musiker', h: 'Bühne' },
     { w: 'Programmierer', h: 'Computer' }, { w: 'Astronaut', h: 'Weltall' }, { w: 'Richter', h: 'Gericht' },
   ],
+  'Urlaub': [
+    { w: 'Koffer', h: 'packen' }, { w: 'Sonnencreme', h: 'Sonne' }, { w: 'Hotel', h: 'übernachten' },
+    { w: 'Reisepass', h: 'Ausweis' }, { w: 'Kreuzfahrt', h: 'Schiff' }, { w: 'Strandtuch', h: 'Strand' },
+    { w: 'Souvenir', h: 'Andenken' }, { w: 'Schnorcheln', h: 'Wasser' }, { w: 'Camping', h: 'Zelt' },
+    { w: 'Sightseeing', h: 'Stadt' }, { w: 'Cocktail', h: 'Getränk' }, { w: 'Liegestuhl', h: 'entspannen' },
+  ],
+  'Sex': [
+    { w: 'Kuss', h: 'Lippen' }, { w: 'Kondom', h: 'Schutz' }, { w: 'Dessous', h: 'Wäsche' },
+    { w: 'Massage', h: 'Entspannung' }, { w: 'Vibrator', h: 'Gerät' }, { w: 'Orgasmus', h: 'Höhepunkt' },
+    { w: 'Striptease', h: 'Bühne' }, { w: 'Handschellen', h: 'fesseln' }, { w: 'One-Night-Stand', h: 'einmalig' },
+    { w: 'Leidenschaft', h: 'Feuer' }, { w: 'Verführung', h: 'Reiz' }, { w: 'Fußfessel', h: 'binden' },
+  ],
 };
 const CATEGORIES = Object.keys(WORDS);
 const RANDOM_CAT = '__random__';
