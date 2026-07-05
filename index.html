@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+  <meta name="theme-color" content="#1f6f43" />
+  <title>Kniffel Block</title>
+
+  <!-- PWA / iOS -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Kniffel" />
+  <link rel="apple-touch-icon" href="icons/icon-180.png" />
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="app-bar">
+    <h1>🎲 Kniffel Block</h1>
+    <div class="app-bar__actions">
+      <button id="btn-players" class="icon-btn" title="Spieler verwalten" aria-label="Spieler verwalten">👥</button>
+      <button id="btn-new" class="icon-btn" title="Neues Spiel" aria-label="Neues Spiel">🔄</button>
+    </div>
+  </header>
+
+  <main id="sheet" class="sheet">
+    <!-- Score table wird per JS gerendert -->
+  </main>
+
+  <footer class="hint">
+    Tippe eine Zelle an, um Punkte einzutragen. „×" = gestrichen (0 Punkte).
+  </footer>
+
+  <!-- Eingabe-Dialog -->
+  <div id="entry-backdrop" class="backdrop" hidden>
+    <div class="entry" role="dialog" aria-modal="true" aria-labelledby="entry-title">
+      <div class="entry__head">
+        <span id="entry-title" class="entry__title">Kategorie</span>
+        <span id="entry-player" class="entry__player"></span>
+      </div>
+      <div id="entry-options" class="entry__options"></div>
+      <div class="entry__custom">
+        <input id="entry-input" type="number" inputmode="numeric" min="0" placeholder="eigener Wert" />
+        <button id="entry-save" class="btn btn-primary">OK</button>
+      </div>
+      <div class="entry__foot">
+        <button id="entry-clear" class="btn btn-ghost">Leeren</button>
+        <button id="entry-cancel" class="btn btn-ghost">Abbrechen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Spieler-Dialog -->
+  <div id="players-backdrop" class="backdrop" hidden>
+    <div class="entry" role="dialog" aria-modal="true" aria-labelledby="players-title">
+      <div class="entry__head">
+        <span id="players-title" class="entry__title">Spieler</span>
+      </div>
+      <ul id="players-list" class="players-list"></ul>
+      <div class="entry__custom">
+        <input id="player-new" type="text" maxlength="12" placeholder="Neuer Spieler" />
+        <button id="player-add" class="btn btn-primary">＋</button>
+      </div>
+      <div class="entry__foot">
+        <button id="players-done" class="btn btn-primary">Fertig</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
