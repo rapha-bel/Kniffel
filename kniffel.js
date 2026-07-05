@@ -84,8 +84,15 @@ function render() {
   sheet.querySelectorAll('.cell-btn').forEach(btn => {
     btn.addEventListener('click', () => openEntry(btn.dataset.player, btn.dataset.cat));
   });
+
+  // Konfetti, sobald der Block erstmals komplett ausgefüllt ist
+  const complete = gameComplete();
+  if (complete && !celebrated) { celebrated = true; if (window.celebrate) window.celebrate(); }
+  if (!complete) celebrated = false;
+
   save();
 }
+let celebrated = false;
 
 function sectionRow(label, cols) {
   return `<tr class="section"><td colspan="${cols+1}">${label}</td></tr>`;
@@ -380,4 +387,5 @@ if ('serviceWorker' in navigator) {
 }
 
 /* ---------- Start ---------- */
+celebrated = gameComplete();   // beim Laden eines fertigen Blocks nicht feiern
 render();

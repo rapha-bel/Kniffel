@@ -69,7 +69,7 @@ function render() {
       return `<td class="cell"><button class="${cls}" data-round="${ri}" data-player="${p.id}">${label}</button></td>`;
     }).join('');
     return `<tr>
-      <td class="cat cat-round"><span class="cat-name">${ri + 1}</span></td>
+      <td class="cat cat-round"><button class="round-num" data-del="${ri}" title="Runde löschen">${ri + 1}</button></td>
       ${cells}
     </tr>`;
   }).join('');
@@ -87,19 +87,25 @@ function render() {
   sheet.querySelectorAll('.cell-btn').forEach(btn => {
     btn.addEventListener('click', () => openEntry(Number(btn.dataset.round), btn.dataset.player));
   });
+  sheet.querySelectorAll('.round-num').forEach(btn => {
+    btn.addEventListener('click', () => deleteRound(Number(btn.dataset.del)));
+  });
 
-  // Sieg-Banner
+  // Sieg-Banner + Konfetti
   const won = winners();
   if (won.length) {
     const names = won.map(p => escapeHtml(p.name)).join(' & ');
     banner.innerHTML = `${ICONS.crown} <span><strong>${names}</strong> ${won.length > 1 ? 'haben' : 'hat'} ${TARGET} erreicht!</span>`;
     banner.hidden = false;
+    if (!celebrated) { celebrated = true; if (window.celebrate) window.celebrate(); }
   } else {
     banner.hidden = true;
+    celebrated = false;
   }
 
   save();
 }
+let celebrated = false;
 
 /* ---------- Rangliste ---------- */
 function normName(n) { return String(n).trim().toLowerCase(); }
@@ -292,6 +298,13 @@ document.getElementById('btn-add-round').addEventListener('click', () => {
   render();
   window.scrollTo(0, document.body.scrollHeight);
 });
+function deleteRound(idx) {
+  if (state.rounds.length <= 1) {
+    if (confirm('Letzte Runde leeren?')) { state.rounds = [ {} ]; render(); }
+    return;
+  }
+  if (confirm(`Runde ${idx + 1} löschen?`)) { state.rounds.splice(idx, 1); render(); }
+}
 document.getElementById('btn-new').addEventListener('click', () => {
   if (confirm('Neues Spiel starten? Alle Runden werden gelöscht (Spieler bleiben).')) {
     state.rounds = [ {} ];
@@ -305,4 +318,5 @@ if ('serviceWorker' in navigator) {
 }
 
 /* ---------- Start ---------- */
+celebrated = winners().length > 0;   // beim Laden eines gewonnenen Spiels nicht feiern
 render();
