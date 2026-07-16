@@ -1,9 +1,9 @@
 'use strict';
 
-/* ---------- Impostor: Pass-and-Play Partyspiel ---------- */
+/* ---------- Imposter: Pass-and-Play Partyspiel ---------- */
 const STORAGE_KEY = 'imposter-state-v1';
 
-// Wörter je Kategorie: { w: geheimes Wort, h: Hinweis für den Impostor }
+// Wörter je Kategorie: { w: geheimes Wort, h: Hinweis für den Imposter }
 const WORDS = {
   'Essen & Trinken': [
     { w: 'Pizza', h: 'Essen' }, { w: 'Sushi', h: 'Japan' }, { w: 'Schokolade', h: 'süß' },
@@ -128,7 +128,7 @@ function renderSetup() {
 
       <h2 class="imp-h">Einstellungen</h2>
       <div class="imp-row">
-        <span>Anzahl Impostor</span>
+        <span>Anzahl Imposter</span>
         <div class="imp-stepper">
           <button id="imp-minus" class="stepper-btn">−</button>
           <span id="imp-count" class="stepper-val">${Math.min(state.numImpostors, maxImp)}</span>
@@ -136,7 +136,7 @@ function renderSetup() {
         </div>
       </div>
       <div class="imp-row">
-        <span>Impostor bekommt Hinweis</span>
+        <span>Imposter bekommt Hinweis</span>
         <button id="hint-toggle" class="toggle ${state.hint ? 'on' : ''}" role="switch" aria-checked="${state.hint}"><span class="toggle__knob"></span></button>
       </div>
       <div class="imp-row imp-row--col">
@@ -197,7 +197,7 @@ function renderCard() {
 
   const inner = isImp
     ? `<div class="imp-card imp-card--imp">
-         <div class="imp-card__role">${eyeIcon()} Du bist Impostor</div>
+         <div class="imp-card__role">${eyeIcon()} Du bist Imposter</div>
          ${state.hint
            ? `<div class="imp-card__hint">Hinweis: <strong>${escapeHtml(round.hintWord)}</strong></div>`
            : `<div class="imp-card__hint">Du kennst das Wort nicht.<br>Tu so, als wüsstest du es!</div>`}
@@ -230,7 +230,7 @@ function renderDiscuss() {
       <h2 class="imp-h imp-center">Alle bereit!</h2>
       <p class="imp-discuss__text">
         Beschreibt reihum das Wort mit <strong>einem</strong> Hinweis.<br>
-        Wer klingt verdächtig? Diskutiert und stimmt ab, wer der Impostor ist.
+        Wer klingt verdächtig? Diskutiert und stimmt ab, wer der Imposter ist.
       </p>
       <div class="imp-starter"><span>Beginnt:</span> <strong>${escapeHtml(starter)}</strong></div>
       <button id="vote-btn" class="btn btn-primary btn-wide">Abstimmung starten</button>
@@ -262,7 +262,7 @@ function renderVoteCard() {
   screen.innerHTML = `
     <div class="imp-reveal">
       <p class="imp-reveal__name">${escapeHtml(state.players[voter])}</p>
-      <h2 class="imp-h imp-center">Wer ist der Impostor?</h2>
+      <h2 class="imp-h imp-center">Wer ist der Imposter?</h2>
       <div class="imp-vote-list">
         ${state.players.map((name, i) => i === voter ? '' :
           `<button class="vote-option" data-vote="${i}">${escapeHtml(name)}</button>`).join('')}
@@ -303,7 +303,7 @@ function renderResult() {
     const verdict = tie
       ? `<span class="verdict tie">Unentschieden – keine klare Mehrheit</span>`
       : caught
-        ? `<span class="verdict win">Erwischt! Die Gruppe hat den Impostor gefunden 🎉</span>`
+        ? `<span class="verdict win">Erwischt! Die Gruppe hat den Imposter gefunden 🎉</span>`
         : `<span class="verdict lose">Entkommen! Die Gruppe lag daneben</span>`;
 
     voteHtml = `
@@ -320,7 +320,7 @@ function renderResult() {
         <div class="imp-card__cat">${escapeHtml(round.category)}</div>
       </div>
       <div class="imp-result__imp">
-        <span class="imp-result__label">${imps.length > 1 ? 'Impostor waren' : 'Impostor war'}</span>
+        <span class="imp-result__label">${imps.length > 1 ? 'Imposter waren' : 'Imposter war'}</span>
         <strong>${imps.map(escapeHtml).join(' & ')}</strong>
       </div>
       ${voteHtml}

@@ -174,7 +174,7 @@ tr.total .val.reached { color: #ffe9a8 !important; }
 .counter-btn.plus { background: linear-gradient(135deg, var(--terra) 0%, var(--terra-dark) 100%); color: #fff; }
 .counter-btn.minus { background: var(--terra-soft); color: var(--terra-dark); }
 
-/* --- Impostor --- */
+/* --- Imposter --- */
 .imp-screen { padding: 16px; max-width: 520px; margin: 0 auto; }
 .imp-h { font-size: 13px; font-weight: 800; color: var(--terra-dark); text-transform: uppercase; letter-spacing: .06em; margin: 18px 0 10px; }
 .imp-h:first-child { margin-top: 4px; }

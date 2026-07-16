@@ -136,17 +136,29 @@ function recordGame() {
   state.players.forEach(p => {
     const t = total(p.id);
     const key = normName(p.name);
-    const e = state.leaderboard[key] || { name: p.name, best: 0 };
+    const e = state.leaderboard[key] || { name: p.name, best: 0, wins: 0 };
     e.name = p.name;
+    if (e.wins == null) e.wins = 0;        // Altbestände nachrüsten
     if (t > e.best) { e.best = t; improved = true; }
     state.leaderboard[key] = e;
   });
+  // Sieg(e) zählen: höchste Punktzahl gewinnt (bei Gleichstand mehrere Sieger)
+  if (state.players.length >= 2) {
+    const totals = state.players.map(p => total(p.id));
+    const max = Math.max(...totals);
+    if (max > 0) {
+      state.players.forEach(p => {
+        if (total(p.id) === max) state.leaderboard[normName(p.name)].wins++;
+      });
+    }
+  }
   save();
   return improved;
 }
 
 function bestRanking() {
-  return Object.values(state.leaderboard).sort((a, b) => b.best - a.best);
+  return Object.values(state.leaderboard)
+    .sort((a, b) => (b.wins || 0) - (a.wins || 0) || b.best - a.best);
 }
 
 const rankingBackdrop = document.getElementById('ranking-backdrop');
@@ -169,7 +181,7 @@ function renderRanking() {
   const bestHtml = best.length
     ? best.map((e, i) => `<div class="rank-row">
         <span class="rank-pos">${medal(i + 1)}</span>
-        <span class="rank-name">${escapeHtml(e.name)}</span>
+        <span class="rank-name">${escapeHtml(e.name)}${e.wins ? `<small>🏆 ${e.wins} ${e.wins === 1 ? 'Sieg' : 'Siege'}</small>` : ''}</span>
         <span class="rank-score">${e.best}</span>
       </div>`).join('')
     : `<p class="rank-empty">Noch keine Werte gespeichert. Beende unten ein Spiel, um die Bestenliste zu starten.</p>`;
@@ -181,7 +193,7 @@ function renderRanking() {
       ${anyScores ? `<button id="rank-record" class="btn btn-primary rank-record">Spiel beenden &amp; werten</button>` : ''}
     </div>
     <div class="rank-section">
-      <h3 class="rank-h">Bestenliste <small>höchste Punktzahl</small></h3>
+      <h3 class="rank-h">Bestenliste <small>Siege &amp; höchste Punktzahl</small></h3>
       <div class="rank-list">${bestHtml}</div>
       ${best.length ? `<button id="rank-clear" class="btn btn-ghost rank-clear">Bestenliste zurücksetzen</button>` : ''}
     </div>`;
